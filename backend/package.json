@@ -1,0 +1,39 @@
+{
+  "name": "afion-erp-backend",
+  "version": "0.1.0",
+  "description": "Afion International ERP — REST API (Express + MongoDB, module-based)",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "seed": "node src/seed/seed.js",
+    "seed:users": "node scripts/seed-users.js",
+    "seed:vendors": "node scripts/seed-vendors.js",
+    "seed:materials": "node scripts/seed-materials.js",
+    "migrate:p8": "node scripts/migrate-p8.js",
+    "check": "node --check src/server.js",
+    "backup": "node scripts/backup.js",
+    "restore": "node scripts/restore.js",
+    "import": "node scripts/import-masters.js",
+    "reset": "node scripts/reset-data.js",
+    "test:e2e": "node test/run.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.5",
+    "multer": "^1.4.5-lts.1",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^10.1.2",
+    "nodemon": "^3.1.9"
+  },
+  "license": "UNLICENSED"
+}

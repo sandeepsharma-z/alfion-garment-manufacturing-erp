@@ -1,0 +1,24 @@
+# Dependencies and build output
+**/node_modules/
+frontend/dist/
+frontend/tsconfig.tsbuildinfo
+
+# Local configuration and secrets
+**/.env
+**/.env.local
+**/.env.*.local
+!**/.env.example
+
+# Runtime and generated data
+.local-mongodb/
+**/.local-mongodb/
+backend/logs/
+backend/test/server.log
+backend/uploads/
+backend/backups/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

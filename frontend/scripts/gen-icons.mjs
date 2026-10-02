@@ -1,0 +1,104 @@
+/**
+ * Generates src/icons/icons.tsx from @iconify-json/mingcute (Fill variants).
+ * Compile-time only — the app ships static SVG components, no runtime icon fetching.
+ */
+import { readFileSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+
+const data = JSON.parse(readFileSync(require.resolve('@iconify-json/mingcute/icons.json'), 'utf8'));
+const icons = data.icons;
+
+/** wanted export name -> candidate mingcute names (first that exists wins) */
+const WANTED = {
+  Dashboard: ['grid-fill', 'dashboard-2-fill', 'dashboard-fill', 'layout-grid-fill'],
+  Samples: ['t-shirt-fill', 'shirt-fill', 'coathanger-fill'],
+  Orders: ['clipboard-fill', 'list-check-fill', 'task-2-fill', 'task-fill'],
+  Stock: ['box-2-fill', 'box-fill', 'package-2-fill', 'package-fill'],
+  Planning: ['calculator-fill', 'counter-2-fill', 'calculator-2-fill'],
+  Po: ['shopping-cart-2-fill', 'shopping-cart-1-fill', 'shopping-bag-2-fill'],
+  Accessory: ['tag-2-fill', 'tag-fill', 'price-tag-fill'],
+  Vendors: ['group-2-fill', 'group-fill', 'user-group-fill'],
+  Jobwork: ['transfer-fill', 'transfer-2-fill', 'transfer-3-fill', 'arrows-right-fill'],
+  Production: ['factory-fill', 'building-2-fill', 'building-4-fill', 'building-1-fill'],
+  Gate: ['safety-certificate-fill', 'shield-shape-fill', 'safe-shield-2-fill', 'shield-fill'],
+  Packing: ['box-3-fill', 'inventory-fill', 'box-2-fill'],
+  Dispatch: ['truck-fill', 'ship-fill', 'send-plane-fill'],
+  Payments: ['wallet-4-fill', 'wallet-2-fill', 'wallet-fill', 'bank-card-fill'],
+  Reports: ['chart-bar-fill', 'chart-vertical-fill', 'chart-line-fill', 'presentation-2-fill'],
+  UsersIcon: ['user-add-2-fill', 'user-add-fill', 'group-3-fill', 'group-2-fill'],
+  Settings: ['settings-3-fill', 'settings-2-fill', 'settings-1-fill', 'settings-4-fill'],
+  /* app chrome */
+  Search: ['search-2-fill', 'search-fill', 'search-3-fill'],
+  Bell: ['notification-fill', 'bell-ringing-fill', 'notification-newdot-fill'],
+  Logout: ['exit-fill', 'exit-door-fill', 'logout-fill'],
+  Login: ['entrance-fill', 'enter-door-fill', 'login-fill', 'exit-fill'],
+  Moon: ['moon-fill', 'moon-stars-fill', 'partly-cloud-night-fill'],
+  Sun: ['sun-fill', 'sun-2-fill', 'sun-line-fill'],
+  Menu: ['menu-fill', 'list-check-3-fill', 'rows-4-fill'],
+  Collapse: ['layout-leftbar-close-fill', 'layout-left-fill', 'menu-fold-fill', 'align-arrow-left-fill'],
+  Plus: ['add-circle-fill', 'plus-fill', 'add-fill'],
+  Edit: ['edit-2-fill', 'edit-fill', 'pencil-fill', 'edit-4-fill'],
+  Key: ['key-2-fill', 'key-1-fill', 'key-fill'],
+  Check: ['check-circle-fill', 'checkbox-fill', 'check-2-fill', 'check-fill'],
+  Close: ['close-circle-fill', 'close-fill'],
+  Shield: ['shield-shape-fill', 'safety-certificate-fill', 'shield-fill'],
+  Alert: ['alert-fill', 'warning-fill', 'alert-diamond-fill'],
+  Info: ['information-fill', 'question-fill', 'book-2-fill'],
+  Clock: ['time-fill', 'alarm-2-fill', 'time-duration-fill'],
+  Eye: ['eye-2-fill', 'eye-fill'],
+  EyeOff: ['eye-close-fill', 'eye-close-line'],
+  Power: ['power-fill', 'shut-down-fill', 'forbid-circle-fill'],
+  Refresh: ['refresh-2-fill', 'refresh-1-fill', 'refresh-3-fill'],
+  Building: ['building-1-fill', 'building-3-fill', 'building-2-fill'],
+  ChevronDown: ['down-fill', 'arrow-down-fill', 'down-small-fill'],
+  ChevronRight: ['right-fill', 'arrow-right-fill', 'right-small-fill'],
+  ArrowLeft: ['arrow-left-fill', 'left-fill', 'arrow-left-circle-fill'],
+  Upload: ['upload-2-fill', 'upload-fill', 'upload-3-fill', 'file-upload-fill'],
+  Download: ['download-2-fill', 'download-fill', 'download-3-fill', 'file-download-fill'],
+  Print: ['print-fill', 'printer-fill'],
+  Trash: ['delete-2-fill', 'delete-fill', 'delete-3-fill'],
+  FileIcon: ['file-fill', 'document-fill', 'file-new-fill', 'paper-fill'],
+  Note: ['message-3-fill', 'chat-1-fill', 'comment-fill', 'message-fill'],
+  Save: ['save-2-fill', 'save-fill'],
+  Tna: ['calendar-2-fill', 'calendar-fill', 'calendar-month-fill', 'schedule-fill'],
+  Pattern: ['ruler-fill', 'scissors-fill', 'scissors-2-fill', 'pencil-ruler-fill'],
+  Quality: ['badge-fill', 'medal-fill', 'shield-shape-fill', 'certificate-fill'],
+  MyWork: ['task-fill', 'list-check-fill', 'checkbox-fill', 'todo-fill'],
+  Flag: ['flag-2-fill', 'flag-1-fill', 'flag-fill'],
+  Inbox: ['inbox-fill', 'inbox-2-fill', 'mail-open-fill'],
+  Calendar: ['calendar-day-fill', 'calendar-time-add-fill', 'calendar-2-fill'],
+  Compliance: ['certificate-fill', 'file-certificate-fill', 'safety-certificate-fill', 'shield-shape-fill'],
+  Chart: ['chart-line-fill', 'chart-bar-fill', 'presentation-2-fill'],
+  Ship: ['ship-fill', 'sailboat-fill', 'anchor-fill', 'truck-fill'],
+  Plane: ['flight-takeoff-fill', 'airplane-fill', 'plane-fill', 'send-plane-fill'],
+};
+
+const pick = (cands) => cands.find((c) => icons[c]);
+const missing = [];
+let out = `/* AUTO-GENERATED by scripts/gen-icons.mjs — Mingcute Fill (iconify), do not edit by hand. */
+import * as React from 'react';
+export type IconProps = React.SVGProps<SVGSVGElement> & { size?: number };
+const S = ({ size = 20, children, ...p }: IconProps & { children: React.ReactNode }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" {...p}>{children}</svg>
+);
+`;
+
+for (const [name, cands] of Object.entries(WANTED)) {
+  const found = pick(cands);
+  if (!found) { missing.push(`${name}: ${cands.join(', ')}`); continue; }
+  out += `export const ${name} = (p: IconProps) => <S {...p}><g dangerouslySetInnerHTML={{ __html: ${JSON.stringify(icons[found].body)} }} /></S>; // ${found}\n`;
+}
+
+if (missing.length) {
+  console.error('MISSING ICONS:\n' + missing.join('\n'));
+  const names = Object.keys(icons).filter((k) => k.endsWith('-fill'));
+  for (const m of missing) {
+    const hint = m.split(':')[1].split(',')[0].trim().split('-')[0];
+    console.error(`\nnames containing "${hint}":`, names.filter((n) => n.includes(hint)).slice(0, 20).join(', '));
+  }
+  process.exit(1);
+}
+
+writeFileSync(new URL('../src/icons/icons.tsx', import.meta.url), out);
+console.log('OK src/icons/icons.tsx ·', Object.keys(WANTED).length, 'icons (mingcute fill)');
